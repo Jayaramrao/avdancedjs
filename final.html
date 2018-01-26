@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-messages/1.6.8/angular-messages.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">    
+    <script>
+        var app = angular.module('myapp', []);
+        app.controller('bookscntrlr', function ($scope, booksservice) {
+            $scope.getdata = function () {
+                $scope.data = booksservice.getdata();
+            }
+			
+        });
+
+        app.service('booksservice', function ($log, $http) {
+            var booksdata;
+            $log.log("service initializes");
+            this.getdata = function () {
+                
+                $http({
+                    url: "https://www.anapioficeandfire.com/api/books",
+                    dataType: 'json',
+                    method: 'GET',
+                    data: [],
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+					 /*$scope.sortcolumnname = 'Srlno';
+            $scope.sortdata = function (header) {
+                if ($scope.sortcolumnname == '-' + header) {
+                    $scope.sortcolumnname = '+' + header;
+                }
+                else {
+                    $scope.sortcolumnname = '-' + header;
+                }
+            };*/
+                }).then(successHandlerdetails, errorHandlerdetails);
+                function successHandlerdetails(response) {
+                    //$scope.value = response;
+                    booksdata = response.data;
+                   // console.log($scope.data);
+                }
+
+                function errorHandlerdetails(response) {
+                    //I strongly consider this for debugging
+                    console.log(response);
+                }
+                return booksdata;
+            }
+        });
+
+    </script>
+    
+</head>
+<body ng-app="myapp" ng-controller="bookscntrlr">
+    <input type="submit" value="Get Data" ng-click="getdata()" />
+	
+	<table>
+	
+  <tr ng-repeat="book in data  | orderBy: 'name' ">
+   <!--<tr ng-repeat="book in data  | orderBy: 'authors' ">-->
+   
+    <td>{{ book.name }}</td>
+    <td>{{ book.authors }}</td>
+	<td>{{ book.publisher }}</td>
+	<!--<td>{{ book.characters }}</td>-->
+	<!-- we can add anything here which we need -->
+	
+	
+  </tr>
+</table>
+</body>
+</html>
